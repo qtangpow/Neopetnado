@@ -1,0 +1,181 @@
+// ==UserScript==
+// @name         Booktastic Books Restocker
+// @namespace    Booktastic Books
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        http://www.neopets.com/objects.phtml?type=shop&obj_type=70
+// @match        http://www.neopets.com/objects.phtml?obj_type=70&type=shop
+// @grant        none
+// ==/UserScript==
+(function() {
+
+    var patterns = [], classes = [];
+
+    /*    The following define the classes of words.  If the first
+    character of the specification is "=", the match will be
+    case-sensitive, otherwise it will be case-insensitive.
+    The specification is a regular expression, and should
+    contain metacharacters to handle variant spellings and
+    plurals.  Any grouping within these patterns *must* be done
+    with a (?: ... ) specification to avoid messing up the
+    capture from the text string.
+
+    You may add additional categories as you wish, but be sure to
+    declare their rendering in the style definition below.  */
+
+    //    Rendering styles for our various word classes
+
+    addGlobalStyle('span.blue { background-color: #00CCFF; } ' +
+           'span.silver { background-color: #A4A4A4; } ' +
+           'span.gold { background-color: #FE9A2E; } ');
+
+    //    MSM "blue" words
+
+    defwords([
+"Diary of a Baby Space Fungus",
+"Half Moon Pop-Up Book",
+"Kreludan Home Decorating",
+"Lennies in Space",
+"Meteorite Craft Book",
+"Zenor Kevix: A Biography",
+
+
+
+             
+                ],
+    "blue");
+
+    //    MSM "silver" words
+
+    defwords([
+"It Came From the Mine",
+"Kreludan Architecture",
+"Kreludan Cookie Cookbook",
+"Secrets of the Universe",
+
+       
+         ],
+    "silver");
+    
+        //    MSM "gold" words
+    
+    defwords([
+"Advanced Kreludan Physics",
+"Alien Aisha Invasion",
+"Beam Me Aboard",
+"Guide to the Neocola Machine",
+"How Purples Got Their Spots",
+"Interplanetary Communications",
+"It Came From Kreludor",
+"Know Your Robot Petpet",
+"Kreludan Engineering",
+"Kreludor Mining Corridor Maps",
+"Kreludor Versus Neopia",
+"Scenic Kreludan Views",
+"Space Station Schematics",
+"The Big Book of Intermediate Evil Plots",
+"The Green Grundo Invasion",
+"The Space Ace",
+
+       
+         ],
+    "gold");
+
+    //    Add one or more words to the dictionary with a specified class
+
+    function defwords(words, which_class) {
+    for (var i = 0; i < words.length; i++) {
+        var w = words[i].replace(/^=/, "");
+        patterns.push(new RegExp("([^a-zA-Z])(" + w + ")([^a-zA-Z])",
+        words[i].match(/^=/) ? "g" : "gi"));
+        classes.push(which_class);
+    }
+    }
+
+    //    Quote HTML metacharacters in body text
+
+    function quoteHTML(s) {
+    s = s.replace(/&/g, "&amp;");
+    s = s.replace(/</g, "&lt;");
+    s = s.replace(/>/g, "&gt;");
+    return s;
+    }
+
+    //    Add one or more CSS style rules to the document
+
+    function addGlobalStyle(css) {
+    var head, style;
+    head = document.getElementsByTagName('head')[0];
+    if (!head) {
+        return;
+    }
+    style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = css;
+    head.appendChild(style);
+    }
+
+    //    Apply highlighting replacements to a text sequence
+
+    var curpat;             // Hidden argument to repmatch()
+    var changes;            // Number of changes made by repmatch()
+
+    function repmatch(matched, before, word, after) {
+    changes++;
+    return before + '<span class="' + classes[curpat] + '">' + word + '</span>' + after;
+    }
+
+    function highlight(s) {
+    s = " " + s;
+    for (curpat = 0; curpat < patterns.length; curpat++) {
+        s = s.replace(patterns[curpat],
+            repmatch);
+    }
+    return s.substring(1);
+    }
+
+    //    We only modify HTML/XHTML documents
+    if (document.contentType &&
+        (!(document.contentType.match(/html/i)))) {
+        return;
+    }
+
+    // Highlight words in body copy
+
+    var textnodes = document.evaluate("//body//text()", document, null,
+        XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+
+    for (var i = 0; i < textnodes.snapshotLength; i++) {
+    var node = textnodes.snapshotItem(i);
+    /* Test whether this text node appears within a
+       <style>, <script>, or <textarea> container.
+       If so, it is not actual body text and must
+       be left alone to avoid wrecking the page. */
+    if (node.parentNode.tagName != "STYLE" &&
+        node.parentNode.tagName != "TEXTAREA" &&
+        node.parentNode.tagName != "SCRIPT") {
+        /* Many documents have large numbers of empty text nodes.
+           By testing for them, we avoid running all of our
+           regular expressions over a target which they can't
+           possibly match. */
+        if (!(node.data.match(/^\s*$/))) {
+        var s = " " + node.data + " ";
+        changes = 0;
+        var d = highlight(quoteHTML(s));
+        if (changes > 0) {
+            var rep = document.createElement("span");
+            rep.innerHTML = d.substring(1, d.length - 1);
+            node.parentNode.replaceChild(rep, node);
+        }
+        }
+    }
+    }
+
+})();
+
+(function() {
+    'use strict';
+
+    // Your code here...
+})();
