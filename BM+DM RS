@@ -1,0 +1,505 @@
+// ==UserScript==
+// @name         Battle Magic + Defence Magic Shop Restocker
+// @namespace    Battle Magic
+// @version      0.1
+// @description  try to take over the world!
+// @author       You
+// @match        http://www.neopets.com/objects.phtml?type=shop&obj_type=9
+// @match        http://www.neopets.com/objects.phtml?obj_type=9&type=shop
+// @match        http://www.neopets.com/objects.phtml?type=shop&obj_type=10
+// @match        http://www.neopets.com/objects.phtml?obj_type=10&type=shop
+// @grant        none
+// ==/UserScript==
+(function() {
+
+    var patterns = [], classes = [];
+
+    /*    The following define the classes of words.  If the first
+    character of the specification is "=", the match will be
+    case-sensitive, otherwise it will be case-insensitive.
+    The specification is a regular expression, and should
+    contain metacharacters to handle variant spellings and
+    plurals.  Any grouping within these patterns *must* be done
+    with a (?: ... ) specification to avoid messing up the
+    capture from the text string.
+
+    You may add additional categories as you wish, but be sure to
+    declare their rendering in the style definition below.  */
+
+    //    Rendering styles for our various word classes
+
+    addGlobalStyle('span.blue { background-color: #00CCFF; } ' +
+           'span.silver { background-color: #A4A4A4; } ' +
+           'span.gold { background-color: #FE9A2E; } ');
+
+    //    MSM "blue" words
+
+    defwords([
+"test",    
+"Steel Chomby Sword",    
+"Steel Chomby Sword",
+"Sword of Trumpeting ",
+"Cloud Charm",
+"Dazzling Steel Lenny Wings",
+"Kougra Wing Collar",
+"Blue Scorchstone",
+                ],
+    "blue");
+
+    //    MSM "silver" words
+
+    defwords([
+        "Cloak of Night",
+"Eleskeleton 3000",
+"Elixir of the Pirate",
+"Emerald Krawk Boots",
+"Eyrie Tail Guard",
+"Full Aisha Armour",
+"Full Chia Armour",
+"Full Flotsam Armour",
+"Full Gelert Armour",
+"Full Gnorbu Armour",
+"Full Grarrl Armour",
+"Full Hissi Armour",
+"Full Ixi Armour",
+"Full Lupe Armour",
+"Full Pteri Armour",
+"Full Ruki Armour",
+"Full Yurble Armour",
+"Golden Moehog Tusk Guards",
+"Green Scorchstone",
+"Heavy Wooden Kau Shield",
+"Koi Full Armour",
+"Leather Xweetok Helmet",
+"Nimmo Elixir of Healing",
+"Ornate Buzz Chestplate",
+"Purple Scorchstone",
+"Quiggle Leaping Boots",
+"Red Yurble Boots",
+"Red Yurble Gauntlets",
+"Scorchio Molten Battle Shield",
+"Scorchio Molten Tail Guard",
+"Shimmering Acara Breastplate",
+"Shoyru Battle Shield",
+"Silver Draik Wing Guards",
+"Sparkling Acara Shield",
+"Stealthy Nimmo Boots",
+"Padded Cybunny Gloves",
+       
+"Acara Gladiator Boots",
+"Acara Twin Blade",
+"Air Faerie Token",
+"Aisha Acorn Darts",
+"Barbed Buzz Dagger",
+"Battle Hammer",
+"Blue Acara Bow",
+"Blue Clockwork Kiko",
+"Blumaroo Pepper Shaker",
+"Brown Clockwork Grundo",
+"Bubbling Lupe Potion",
+"Buzz Hive Bomb",
+"Chia Mites",
+"Entangling Lenny Lasso",
+"Exploding Blumaroo Dice",
+"Furry Lupe Staff",
+"Gelert Throwing Bone",
+"Golden Bori Bow",
+"Golden Bori Staff",
+"Golden Candy Cane Sword",
+"Golden Kougra Slingshot",
+"Hand Carved Blumaroo Bow",
+"Hand Stitched Usul Dagger",
+"Hydro Hammer",
+"Icy Chia Goggles",
+"Ixi Elixir of the Woods",
+"JubJub Tickler",
+"Korbat Power Blaster",
+"Kougra Power Sword",
+"Kougra Wool Bomb",
+"Lenny Ray Gun of Freezing",
+"Lightweight Bori Sword",
+"Maraquan Aisha Bow",
+"Meerca Gloves of Agility",
+"Mighty Techo Hammer",
+"Oaken Kacheek Sword",
+"Ornate Buzz Stinger",
+"Padded Cybunny Gloves",
+"Peophin Bubble",
+"Pirate Slingshot",
+"Potion of Skeith Scales",
+"Pteri Dagger",
+"Pteri Throwing Feathers",
+"Quiggle Sword of Terror",
+"Rainbow Frost Cannon",
+"Rainbow Sticky Hand",
+"Regal Draik Wand",
+"Sack of Garlic Powder",
+"Skeith Destructo Horn",
+"Snotty Sword",
+"Staff of Garlicness",
+"Staff of Ultranova",
+"Ticking Eyrie Bomb",
+"Tuskaninny Battle Trumpet",
+"Tuskaninny Personal Cannon",
+"Ultra Eyrie Eye Mask",
+"Wocky Battle Mallet",
+"Wocky Slingshot",
+"Wooden Meerca Mallet",
+"Xweetok Battle Batons",
+
+         ],
+    "silver");
+    
+        //    MSM "gold" words
+    
+    defwords([
+"Apple Jelly Club",
+"Battle Quill",
+"Black Frost Cannon",
+"Blade of Supernova",
+"Blade of Ultranova",
+"Blade of the Battle Faerie",
+"Blue Acara Slingshot",
+"Blumaroo Battle Staff",
+"Blumaroo Slingshot",
+"Bony Grarrl Club",
+"Bottled Uni Essence",
+"Bouncy Kiko Ball of Doom",
+"Brass Bruce Horn Of Deafening",
+"Brilliant Poogle Wand",
+"Chia Apple Bomb",
+"Chia Ray Gun",
+"Chilli Chucks",
+"Chilli Sword",
+"Clockwork Nimmo",
+"Coral Koi Slingshot",
+"Curved Wocky Sabre",
+"Dark Faerie Token",
+"Draik Enhancement Brew",
+"Earth Faerie Token",
+"Emerald Krawk Sword",
+"Enchanted Ixi Wand",
+"Enchanted Kougra Pendant",
+"Enhanced Acara Potion",
+"Eyrie Pocket Catapult",
+"Fire Faerie Token",
+"Fire Flail",
+"Flotsam Shell Sword",
+"Flying Fireball",
+"Gelert Blade of Frozen Wrath",
+"Gilded Ruki Flail",
+"Glittery Scorchstone",
+"Glowing Tuskaninny Wand",
+"Golden Korbat Charm",
+"Golden Lupe Bone Sword",
+"Golden Peophin Harp",
+"Golden Ruki Brooch",
+"Grape Jelly Sword",
+"Green Clockwork Hissi",
+"Grey Sword",
+"Hand Carved Draik Slingshot",
+"Hand Stitched Usul Hammer",
+"Hardened Ruki Claws",
+"Highland Chia War Hammer",
+"Hissing Techo Staff",
+"Horned Grarrl Slingshot",
+"Icy Blade of Terror Mountain",
+"Icy Bruce Boomerang Of Doom",
+"Illusens Gems",
+"Illusens Hip Blade",
+"Illusens Really Sharp Stick",
+"Ixi Hoof Blade",
+"Jam Filled Battle Biscuit",
+"Jhudora Hourglass",
+"JubJub Flame Ball",
+"JubJub Foot Hardening Lotion",
+"JubJub Padded Paws",
+"Kacheek Flour",
+"Kaylas Hat",
+"Kiko Throwing Plasters",
+"Kikovision Goggles",
+"Korbat Wing Blade",
+"Kyrii Spoonapult",
+"Kyrii Swordhammer",
+"Last Avocado Bomb",
+"Light Faerie Token",
+"Lightweight Buzz Axe",
+"Lightweight Xweetok Spear",
+"Lupe Chia Bomb",
+"Mango Jelly Club",
+"Maraquan Draik Dagger",
+"Mini Throwing Toasts",
+"Mistletoe Potion",
+"Moehog Bristle Dagger",
+"Moehog Crossbow",
+"Moehog Slingshot",
+"Nova Blade",
+"Ornate Jetsam Bow",
+"Ornate Jetsam Hammer",
+"P-Bomb",
+"Padded Cybunny Claw",
+"Padded Mynci Gloves",
+"Painted Techo Club",
+"Palace Guard Sandals",
+"Palace Guard Sword",
+"Pearl Koi Slingshot",
+"Pink Clockwork Poogle",
+"Pirate Spear",
+"Poison Muffin",
+"Poogle Fang Amulet",
+"Poogle Liquid Freeze Potion",
+"Poogle Slingshot",
+"Pteri Battle Whistle",
+"Pteri Egg Shot",
+"Red Clockwork Grundo",
+"Ruby Krawk Shield",
+"Ruby Krawk Stun Ray",
+"Rustic Aisha Blade",
+"Sack Of Kougranip",
+"Sharpened Hook",
+"Shoyru Sword",
+"Silver Draik Bow",
+"Silver Korbat Amulet",
+"Skeith Inferno Spell",
+"Snotty Hammer",
+"Spotted Kau Sword",
+"Staff of Supernova",
+"Sticky Quiggle Flicky Thing",
+"Strawberry Bomb",
+"Studded Bruce Bow Of Protection",
+"Super Attack Bacon",
+"Taelias Snowball",
+"Tangle Net Gun",
+"Techo Dagger Of Speed",
+"Toothbrush Sword",
+"Under and Overripe Avocado Bombs",
+"Uni Hoof Magnet",
+"Uni Horn Wand",
+"Water Faerie Token",
+"Winged Shoyru Spear",
+"Wooden Kau Wand",
+"Wooden Krawk Bow",
+"Wooden Krawk Mallet",
+"Wooden Krawk Staff",
+"Yellow Clockwork Lupe",
+"Yurble Forest Blade",
+"Acara Ear Guards",
+"Aisha Feathered Charm",
+"Bag of Lenny Healing Seeds",
+"Blumaroo Health Potion",
+"Brilliant Poogle Buckler",
+"Bubbling Flotsam Elixir",
+"Bubbling Ruki Elixir",
+"Chomby Lucky Charm Bracelet",
+"Combo Battle Mirror",
+"Emerald Hissi Breastplate",
+"Emerald Hissi Shield",
+"Emerald Krawk Jacket",
+"Feathered Pteri Cloak",
+"Flame Reflectozap",
+"Flotsam Amulet of the Champion",
+"Flotsam Chestplate of the Champion",
+"Flotsam Shell Shield",
+"Full Acara Armour",
+"Full Blumaroo Armour",
+"Full Bori Armour",
+"Full Bruce Armour",
+"Full Buzz Armour",
+"Full Chomby Armour",
+"Full Cybunny Armour",
+"Full Draik Armour",
+"Full Elephante Armour",
+"Full Eyrie Armour",
+"Full Jetsam Armour",
+"Full JubJub Armour",
+"Full Kau Armour",
+"Full Kiko Armour",
+"Full Korbat Armour",
+"Full Kougra Armour",
+"Full Krawk Armour",
+"Full Kyrii Armour",
+"Full Lenny Armour",
+"Full Lutari Armour",
+"Full Meerca Armour",
+"Full Moehog Armour",
+"Full Mynci Armour",
+"Full Nimmo Armour",
+"Full Ogrin Armour",
+"Full Peophin Armour",
+"Full Poogle Armour",
+"Full Quiggle Armour",
+"Full Scorchio Armour",
+"Full Shoyru Armour",
+"Full Skeith Armour",
+"Full Techo Armour",
+"Full Tonu Armour",
+"Full Tuskaninny Armour",
+"Full Uni Armour",
+"Full Usul Armour",
+"Full Xweetok Armour",
+"Full Zafara Armour",
+"Gelert Frostweaver Shield",
+"Gilded Kougra Chestplate",
+"Golden Full Kacheek Armour",
+"Green Shoyru Tail Armour",
+"Green Shoyru Wing Armour",
+"Green Techo Bow",
+"Hand Carved Shoyru Wand",
+"Healing Ankh of the Nimmo",
+"Highland Chia Battle Shield",
+"Honeycomb Buzz Shield",
+"Illusens Silver Shield",
+"Kaylas Magic Cloak",
+"Kiko Helm of Intellect",
+"Lucky Uni Charm",
+"Lupe Grabber Jaw",
+"Maraquan Draik Cloak",
+"Meerca Speed Potion",
+"Meerca Tail Shield",
+"Mega U-Bend",
+"Mystical Ixi Hooded Cape",
+"Mystical Nimmo Amulet",
+"Ornate Jetsam Battle Helmet",
+"Ornate Jetsam Shield",
+"Palace Guard Bracers",
+"Palace Guard Helmet",
+"Palace Guard Tunic",
+"Plush Gelert Collar",
+"Poogle Lightning Boots",
+"Rainbow Scorchstone",
+"Red Yurble Breast Plate",
+"Red Yurble Ear Guards",
+"Regulation Chainmail",
+"Scorchio Battle Wand",
+"Shadow Armour",
+"Silver Draik Chestplate",
+"Silver Kacheek Armour",
+"Sledge Shield",
+"Snot Helmet",
+"Spotted Kau Shield",
+"Squishy Shoyru Healing Stone",
+"Storm Amulet",
+"Superior Reflection Shield",
+"Thyoras Tear",
+"Toast Shield",
+"Tower Shield",
+"Triple Turbo Dryer",
+"Tuskaninny Raiders Helm",
+"Ultimate Dark Reflectorb",
+"Ultra Dual Shovel",
+"Ultra Supreme Kiko Walker",
+"Uni Charm",
+"Uni Healing Crown",
+"Winged Shoyru Amulet",
+"Wooden Krawk Shield",
+"Xweetok Boots Of Speed",
+"Yurble Blocking Shield",
+"Yurble Forest Cloak",
+"Yurble Forest Shield",
+
+"Padded Cybunny Claw",
+"Padded Cybunny Gloves",
+"Padded Cybunny Sword",
+"Padded Gloves of the Champion",
+"Padded Mynci Gloves",
+       
+         ],
+    "gold");
+
+    //    Add one or more words to the dictionary with a specified class
+
+    function defwords(words, which_class) {
+    for (var i = 0; i < words.length; i++) {
+        var w = words[i].replace(/^=/, "");
+        patterns.push(new RegExp("([^a-zA-Z])(" + w + ")([^a-zA-Z])",
+        words[i].match(/^=/) ? "g" : "gi"));
+        classes.push(which_class);
+    }
+    }
+
+    //    Quote HTML metacharacters in body text
+
+    function quoteHTML(s) {
+    s = s.replace(/&/g, "&amp;");
+    s = s.replace(/</g, "&lt;");
+    s = s.replace(/>/g, "&gt;");
+    return s;
+    }
+
+    //    Add one or more CSS style rules to the document
+
+    function addGlobalStyle(css) {
+    var head, style;
+    head = document.getElementsByTagName('head')[0];
+    if (!head) {
+        return;
+    }
+    style = document.createElement('style');
+    style.type = 'text/css';
+    style.innerHTML = css;
+    head.appendChild(style);
+    }
+
+    //    Apply highlighting replacements to a text sequence
+
+    var curpat;             // Hidden argument to repmatch()
+    var changes;            // Number of changes made by repmatch()
+
+    function repmatch(matched, before, word, after) {
+    changes++;
+    return before + '<span class="' + classes[curpat] + '">' + word + '</span>' + after;
+    }
+
+    function highlight(s) {
+    s = " " + s;
+    for (curpat = 0; curpat < patterns.length; curpat++) {
+        s = s.replace(patterns[curpat],
+            repmatch);
+    }
+    return s.substring(1);
+    }
+
+    //    We only modify HTML/XHTML documents
+    if (document.contentType &&
+        (!(document.contentType.match(/html/i)))) {
+        return;
+    }
+
+    // Highlight words in body copy
+
+    var textnodes = document.evaluate("//body//text()", document, null,
+        XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+
+    for (var i = 0; i < textnodes.snapshotLength; i++) {
+    var node = textnodes.snapshotItem(i);
+    /* Test whether this text node appears within a
+       <style>, <script>, or <textarea> container.
+       If so, it is not actual body text and must
+       be left alone to avoid wrecking the page. */
+    if (node.parentNode.tagName != "STYLE" &&
+        node.parentNode.tagName != "TEXTAREA" &&
+        node.parentNode.tagName != "SCRIPT") {
+        /* Many documents have large numbers of empty text nodes.
+           By testing for them, we avoid running all of our
+           regular expressions over a target which they can't
+           possibly match. */
+        if (!(node.data.match(/^\s*$/))) {
+        var s = " " + node.data + " ";
+        changes = 0;
+        var d = highlight(quoteHTML(s));
+        if (changes > 0) {
+            var rep = document.createElement("span");
+            rep.innerHTML = d.substring(1, d.length - 1);
+            node.parentNode.replaceChild(rep, node);
+        }
+        }
+    }
+    }
+
+})();
+
+(function() {
+    'use strict';
+
+    // Your code here...
+})();
